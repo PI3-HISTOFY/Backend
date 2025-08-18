@@ -16,12 +16,15 @@ SSL_CA_PATH = os.path.join(os.path.dirname(__file__), "certs", "ca.pem")
 # Construir la URL de conexión
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
+
 # Crear el motor con SSL
 engine = create_engine(
     DATABASE_URL,
     connect_args={
         "ssl": {"ca": SSL_CA_PATH}
-    }
+    },
+    pool_pre_ping=True,
+    pool_recycle=280,
 )
 
 # Configuración de sesión
@@ -37,3 +40,4 @@ def get_db():
         yield db
     finally:
         db.close()
+
