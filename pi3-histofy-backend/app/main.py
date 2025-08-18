@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from app import auth, security, ocr, database, models, user
 
+
 app = FastAPI(title="Histofy Backend", version="1.0.0")
 
 # Rutas de autenticación

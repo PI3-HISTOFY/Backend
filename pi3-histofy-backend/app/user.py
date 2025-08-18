@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app import models, database, security, schemas
-from app.Usuarios.auth import get_current_user
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
