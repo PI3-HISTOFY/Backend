@@ -1,36 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-import os
 
-# Parámetros de conexión
-DB_USER = "avnadmin"
-DB_PASSWORD = "AVNS_87kw6EzYcxEBI9JRzHt"
-DB_HOST = "mysql-2f9c0883-vale-901b.f.aivencloud.com"
-DB_PORT = 14890
-DB_NAME = "Histofy"
+# 🔹 Cambia esta URL según tu base de datos
+# Formato PostgreSQL: "postgresql://usuario:contraseña@localhost/nombre_bd"
+DATABASE_URL = "sqlite:///./histofy.db"  # Temporal con SQLite para pruebas
 
-# Ruta al certificado descargado
-SSL_CA_PATH = os.path.join(os.path.dirname(__file__), "certs", "ca.pem")
-
-# Construir la URL de conexión
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-# Crear el motor con SSL
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={
-        "ssl": {"ca": SSL_CA_PATH}
-    }
-)
-
-# Configuración de sesión
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base para modelos
 Base = declarative_base()
 
-# Dependencia para inyección de sesión en endpoints
+# Dependencia para usar en endpoints
 def get_db():
     db = SessionLocal()
     try:
