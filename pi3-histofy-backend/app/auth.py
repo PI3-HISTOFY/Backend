@@ -75,6 +75,15 @@ def login(
         "expires_in": security.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     }
 
+@router.get("/protected")
+def protected_route(current_user: models.User = Depends(get_current_user)):
+    return {
+        "message": f"Hola {current_user.nombre} {current_user.apellido}, bienvenido",
+        "email": current_user.email,
+        "rol": current_user.rol,
+        "estado": current_user.estado
+    }
+
 @router.post("/logout")
 def logout(
     db: Session = Depends(database.get_db),

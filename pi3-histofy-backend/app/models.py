@@ -3,7 +3,7 @@ from sqlalchemy.sql import func
 import enum
 from app.database import Base
 from sqlalchemy.orm import relationship
-import enum
+from datetime import datetime
 
 
 class RolEnum(str, enum.Enum):
@@ -40,3 +40,13 @@ class Sesion(Base):
     ip = Column(String(50))
 
     user = relationship("User", backref="sesiones")
+
+
+class Auditoria(Base):
+    __tablename__ = "auditorias"
+
+    idLog = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    idUsuario = Column(Integer, ForeignKey("usuarios.idUsuario"))
+    accion = Column(String(255), nullable=False)
+    descripcion = Column(String(500))
+    fecha = Column(DateTime, default=datetime.utcnow)

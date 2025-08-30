@@ -1,7 +1,9 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal, Optional
+from typing import Literal, Optional, List
 from enum import Enum
+from datetime import datetime
 
+#usuarios
 class RolEnum(str, Enum):
     admin = "admin"
     medico = "medico"
@@ -44,3 +46,36 @@ class UserResponse(BaseModel):
 class UserLogin(BaseModel):
     nombre: str
     password: str
+
+
+#historias clinicas
+class Paciente(BaseModel):
+    cc: str
+    nombre: str
+    apellido: str
+    edad: Optional[int] = None
+    sexo: Optional[str] = None
+
+class NLPData(BaseModel):
+    categorias: List[str] = []
+    keywords: List[str] = []
+    sentimiento: Optional[str] = None
+    riesgo: Optional[str] = None
+
+class HistoriaMongoBase(BaseModel):
+    paciente: Paciente
+    texto: str
+    diagnostico: Optional[str] = None
+    tratamiento: Optional[str] = None
+    notas: Optional[str] = None
+    nlp: Optional[NLPData] = None
+
+class HistoriaMongoCreate(HistoriaMongoBase):
+    pass
+
+class HistoriaMongoResponse(HistoriaMongoBase):
+    idUsuario: int
+    fecha: datetime
+
+    class Config:
+        orm_mode = True
