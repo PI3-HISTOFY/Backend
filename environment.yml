@@ -2,17 +2,8 @@
 channels:
   - defaults
 dependencies:
-  - python=3.13
-  - conda=25.7.0
-  - setuptools
+  - python=3.10
   - pip
+  - setuptools
   - wheel
-  - conda-anaconda-telemetry>=0.3.0
-  - conda-anaconda-tos>=0.2.2
-  - conda-content-trust
-  - conda-libmamba-solver
-  - menuinst
-  - anaconda_prompt
-  - anaconda_powershell_prompt
-  - anaconda-anon-usage
-  - anaconda-auth
+  - pytest
