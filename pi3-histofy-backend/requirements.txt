@@ -1,9 +1,0 @@
-Flask
-Flask-SQLAlchemy
-Flask-Migrate
-Flask-JWT-Extended
-Pydantic
-python-dotenv
-pillow
-pytesseract
-pdf2image
