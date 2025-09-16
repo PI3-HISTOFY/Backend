@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 from app.main import app
 
-# 🔹 Cliente de prueba
+
 @pytest.mark.asyncio
 async def test_register_user():
     """
@@ -60,7 +60,7 @@ async def test_protected_route_without_token():
     Esperado: 401 Unauthorized
     """
     async with AsyncClient(app=app, base_url="http://test") as ac:
-        response = await ac.get("/users/me")  # <- Ajusta si tu ruta protegida es distinta
+        response = await ac.get("/users/me")  
     assert response.status_code == 401
 
 
