@@ -1,0 +1,9 @@
+﻿name: bas
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - setuptools
+  - wheel
+  - pytest
