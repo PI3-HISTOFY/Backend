@@ -3,7 +3,7 @@ name: Deploy FastAPI to Elastic Beanstalk
 on:
   push:
     branches:
-      - main
+      - Deploy
 
 jobs:
   deploy:
