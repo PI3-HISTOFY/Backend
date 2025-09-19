@@ -1,0 +1,46 @@
+name: Deploy FastAPI to Elastic Beanstalk
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.2"
+
+      - name: Install dependencies
+        run: |
+          cd pi3-histofy-backend
+          pip install -r requirements.txt
+
+      - name: Zip source bundle
+        run: |
+          cd pi3-histofy-backend
+          zip -r ../backend.zip . -x "*.git*"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1  
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v20
+        with:
+          application_name: "histofy-backend"      # nombre app en EB
+          environment_name: "Histofy-backend-env"  # nombre del entorno
+          region: "us-east-1"
+          version_label: ${{ github.sha }}
+          deployment_package: "backend.zip"
