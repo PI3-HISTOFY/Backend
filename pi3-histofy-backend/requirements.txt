@@ -10,3 +10,6 @@ pdf2image
 fastapi==0.115.0
 uvicorn[standard]==0.31.0
 gunicorn==23.0.0
+pymongo
+sqlalchemy
+pymysql
