@@ -16,3 +16,4 @@ pymysql
 certifi
 email-validator
 python-jose
+passlib[bcrypt]
