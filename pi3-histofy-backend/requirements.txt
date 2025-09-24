@@ -18,3 +18,4 @@ email-validator
 python-jose
 passlib[bcrypt]
 python-multipart
+opencv-python-headless==4.10.0.84
