@@ -1,0 +1,265 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hola",
+        "hola!",
+        "hola :)",
+        "holi",
+        "buenas",
+        "buenas!",
+        "buen día",
+        "buenos días",
+        "buenas tardes",
+        "buenas noches",
+        "qué más",
+        "¿qué tal?",
+        "cómo vas",
+        "qué onda",
+        "hey",
+        "hey!",
+        "hola bot",
+        "hola, necesito ayuda",
+        "saludos",
+        "muy buenas",
+        "hola de nuevo",
+        "hola histofy",
+        "qué haces",
+        "holaaa",
+        "buenas, ¿me ayudas?"
+      ],
+      "responses": [
+        "¡Hola! ¿En qué te ayudo?",
+        "Hola, dime tu consulta clínica."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "gracias",
+        "mil gracias",
+        "muchas gracias",
+        "te agradezco",
+        "ok gracias",
+        "listo, gracias",
+        "chao",
+        "chau",
+        "adiós",
+        "nos vemos",
+        "hasta luego",
+        "hasta pronto",
+        "bye",
+        "me voy",
+        "eso es todo",
+        "por ahora es todo",
+        "listo, nos vemos",
+        "listo, gracias por la ayuda"
+      ],
+      "responses": [
+        "¡Con gusto! 😊",
+        "Hasta luego."
+      ]
+    },
+    {
+      "tag": "get_all",
+      "patterns": [
+        "trae todos los historiales",
+        "muestra todos los historiales",
+        "listar todas las historias clínicas",
+        "quiero ver todas las historias",
+        "tráeme todo",
+        "trae todo",
+        "muestra todo",
+        "todas las historias",
+        "todos los pacientes",
+        "ver todo",
+        "lista completa de historias",
+        "historiales completos",
+        "ver todos los registros",
+        "enséñame todas las historias",
+        "trae todo lo que haya",
+        "trae todas",
+        "muestra todo el listado",
+        "trae los últimos 100 historiales",
+        "muestra top 20",
+        "primeros 50, por favor"
+      ],
+      "responses": [
+        "Listando historias…",
+        "Mostrando todas las historias (con límite por defecto)."
+      ]
+    },
+    {
+      "tag": "get_by_id",
+      "patterns": [
+        "historia por cédula",
+        "historia por cedula",
+        "buscar por documento",
+        "tráeme la historia de este número de cédula",
+        "por documento del paciente",
+        "consulta por CC",
+        "historia por CC 91299907",
+        "por cédula 123456789",
+        "por cedula 123456789",
+        "documento: 98.765.432-1",
+        "documento 98.765.432-1",
+        "CC 912 999 07",
+        "cédula 912.999.07",
+        "cedula 912.999.07",
+        "TI 1002456789",
+        "CE 456789123",
+        "búsqueda por identificación",
+        "busca paciente con documento 1020304050",
+        "historia clínica de la cédula 987654321",
+        "por número de documento 123-456-789",
+        "muestrame por CC 91299907",
+        "quiero la historia de la cédula del paciente"
+      ],
+      "responses": [
+        "Buscando por documento/identificación…"
+      ]
+    },
+    {
+      "tag": "get_by_name",
+      "patterns": [
+        "tráeme la historia de",
+        "quiero la historia del paciente",
+        "muestra historia de",
+        "historia clínica de",
+        "historia de Carlos Pérez",
+        "historia de Alfonso Castro Contreras",
+        "paciente María López",
+        "buscar por nombre Juan Martínez",
+        "consulta por nombre del paciente",
+        "necesito la historia de Pedro",
+        "historia de camilo",
+        "historia de ana maria",
+        "historia de andrés gonzález",
+        "ver historia de sofía torres",
+        "muestra la historia de la paciente laura",
+        "historia del paciente esteban",
+        "quiero ver la historia de diana",
+        "historia de jose luis",
+        "muéstrame la historia de felipe gómez",
+        "trae la historia de sandra"
+      ],
+      "responses": [
+        "Buscando por nombre de paciente…"
+      ]
+    },
+    {
+      "tag": "get_by_category",
+      "patterns": [
+        "tráeme los pacientes con diabetes",
+        "pacientes con hipertensión",
+        "historias con asma",
+        "muestra pacientes con dm2",
+        "quiénes tienen obesidad",
+        "pacientes con enfermedad renal",
+        "casos de cardiología",
+        "casos de oftalmología",
+        "categoría glaucoma",
+        "historias con retinopatía",
+        "pacientes con retinopatía diabética",
+        "categoría: neumonía",
+        "categoría: EPOC",
+        "muestra casos de insuficiencia cardíaca",
+        "ver casos de migraña",
+        "busca por categoría endocrinología",
+        "casos de retina",
+        "categoría asma",
+        "personas con depresión",
+        "pacientes con anemia",
+        "pacientes diabéticos",
+        "historiales de DM2",
+        "muestra categoría glaucoma",
+        "filtra por categoría neumología",
+        "trae casos de COVID",
+        "casos de VIH",
+        "casos de cáncer de mama"
+      ],
+      "responses": [
+        "Buscando por categoría clínica…",
+        "Entendido, filtrando por categoría…"
+      ]
+    },
+    {
+      "tag": "get_by_specialty",
+      "patterns": [
+        "por especialidad oftalmología",
+        "muestra optometría",
+        "historias de cardiología",
+        "pacientes de neurología",
+        "casos por especialidad neumología",
+        "especialidad endocrinología",
+        "trae medicina interna",
+        "muestrame pediatría",
+        "quirúrgicas de cirugía general",
+        "traumatología por favor",
+        "ginecología",
+        "obstetricia",
+        "dermatología",
+        "psiquiatría",
+        "rehabilitación",
+        "odontología",
+        "odontologia",
+        "medicina general",
+        "urgencias",
+        "optometria",
+        "especialidad: oftalmología",
+        "filtra por cardiologia",
+        "necesito neurologia",
+        "ponme neumologia",
+        "casos de endocrino"
+      ],
+      "responses": [
+        "Buscando por especialidad…"
+      ]
+    },
+    {
+      "tag": "get_by_level",
+      "patterns": [
+        "por nivel I",
+        "por nivel II",
+        "por nivel III",
+        "historias de nivel 1",
+        "historias de nivel 2",
+        "historias de nivel 3",
+        "filtra por nivel uno",
+        "filtra por nivel dos",
+        "filtra por nivel tres",
+        "nivel de atención I",
+        "nivel de atención II",
+        "nivel de atención III",
+        "trae nivel I",
+        "trae nivel II",
+        "trae nivel III"
+      ],
+      "responses": [
+        "Buscando por nivel de atención…"
+      ]
+    },
+    {
+      "tag": "fallback",
+      "patterns": [
+        "no entiendo",
+        "qué puedes hacer",
+        "ayuda",
+        "qué opciones hay",
+        "cómo funciona esto",
+        "no sé qué pedir",
+        "explícame",
+        "menú",
+        "opciones",
+        "no te entiendo",
+        "me ayudas?",
+        "dime cómo buscar",
+        "qué consultas soportas"
+      ],
+      "responses": [
+        "Puedo buscar historias: todas, por cédula/documento, por nombre, por categoría clínica y por especialidad. ¿Qué necesitas?"
+      ]
+    }
+  ]
+}

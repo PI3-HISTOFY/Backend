@@ -7,20 +7,27 @@ from app.database.databaseNSQL import historias_collection
 from app.controllers import history_controller
 from app.services.auth import get_current_user
 from app.services.auditoria import registrar_auditoria
+from app.models.history_model import (
+    HistoriaMongoCreateV2,
+    HistoriaMongoResponseV2
+)
 
 
 router = APIRouter(prefix="/history", tags=["History"])
 
-@router.post("/registerH", response_model=HistoriaMongoResponse)
-def register_history(
-    history: HistoriaMongoCreate,
+@router.post("/registerH", response_model=HistoriaMongoResponseV2)
+def register_history_v2(
+    history: HistoriaMongoCreateV2,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
     if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Debe iniciar sesión")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Debe iniciar sesión"
+        )
 
-    return history_controller.create_history(db, history, current_user)
+    return history_controller.create_history_v2(db, history, current_user)
 
 
 

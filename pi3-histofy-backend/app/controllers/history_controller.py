@@ -5,6 +5,7 @@ from app.database.databaseNSQL import historias_collection
 from app.models.user_model import User
 from app.models.history_model import HistoriaMongoCreate
 from app.services.auditoria import registrar_auditoria
+from app.models.history_model import HistoriaMongoCreateV2 
 
 
 def create_history(db: Session, history: HistoriaMongoCreate, current_user: User
@@ -86,3 +87,51 @@ def get_histories_by_patient(db: Session, current_user: User, cc: str):
     )
 
     return historias
+
+def _solo_digitos(cc: str | None) -> str | None:
+    if not cc:
+        return None
+    return "".join(ch for ch in cc if ch.isdigit())
+
+def create_history_v2(
+    db: Session,
+    history: HistoriaMongoCreateV2,
+    current_user: User
+):
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Debe iniciar sesión para acceder a este recurso"
+        )
+
+    # Normalizaciones mínimas
+    paciente = history.paciente.dict() if history.paciente else {}
+    paciente["cc"] = _solo_digitos(paciente.get("cc"))
+
+    doc = {
+        "idUsuario": current_user.idUsuario,
+        # si viene fecha, úsala; si no, puedes dejarla en None o setear ahora
+        "fecha": history.fecha if history.fecha else None,
+        "paciente": paciente,
+        "motivo_consulta": history.motivo_consulta,
+        "antecedentes": history.antecedentes,
+        "examen": history.examen,
+        "diagnostico": history.diagnostico,
+        "tratamiento": history.tratamiento,
+        "tipo_atencion": history.tipo_atencion,
+        "especialidad": history.especialidad,
+        "nivel_atencion": history.nivel_atencion,
+        "nlp": history.nlp.dict() if history.nlp else {}
+    }
+
+    res = historias_collection.insert_one(doc)
+    doc["_id"] = str(res.inserted_id)
+
+    registrar_auditoria(
+        db,
+        current_user.idUsuario,
+        "CREAR_HISTORIA",
+        f"Historia creada (v2) para paciente CC {paciente.get('cc')}"
+    )
+
+    return doc
