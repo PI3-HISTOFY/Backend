@@ -1,23 +1,35 @@
+# --- Backend API ---
+fastapi==0.115.0
+uvicorn[standard]==0.31.0
+gunicorn==23.0.0
+python-dotenv
+pydantic
+sqlalchemy
+pymysql
+email-validator
+python-jose
+passlib[bcrypt]==1.7.4
+bcrypt==4.0.1
+python-multipart
+pymongo
+certifi
+openai>=1.0.0
+
+# --- OCR / Documentos ---
+pillow
+pytesseract
+pdf2image
+opencv-python-headless==4.10.0.84
+symspellpy
+python-docx
+
+# --- Chatbot (clasificador intents) ---
+tensorflow==2.17.0
+numpy
+nltk
+
+# --- (legado opcional) si aún tienes algo Flask en el repo ---
 Flask
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-JWT-Extended
-Pydantic
-python-dotenv
-pillow
-pytesseract
-pdf2image
-fastapi==0.115.0
-uvicorn[standard]==0.31.0
-gunicorn==23.0.0
-pymongo
-sqlalchemy
-pymysql
-certifi
-email-validator
-python-jose
-passlib[bcrypt]
-python-multipart
-opencv-python-headless==4.10.0.84
-openai>=1.0.0
-opencv-python-headless
