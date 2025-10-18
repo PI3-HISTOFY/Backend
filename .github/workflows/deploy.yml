@@ -13,20 +13,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12.2"
-
-      - name: Install dependencies
+      - name: Create Dockerrun.aws.json
         run: |
-          cd pi3-histofy-backend
-          pip install -r requirements.txt
+          cat > Dockerrun.aws.json <<'EOF'
+          {
+            "AWSEBDockerrunVersion": 1,
+            "Image": {
+              "Name": "camilocratos/histofy-backend:latest",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": "8000"
+              }
+            ]
+          }
+          EOF
 
-      - name: Zip source bundle
-        run: |
-          cd pi3-histofy-backend
-          zip -r ../backend.zip . -x "*.git*"
+      - name: Zip Docker bundle
+        run: zip -r backend.zip Dockerrun.aws.json
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
