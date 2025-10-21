@@ -8,7 +8,7 @@
     {
       "ContainerPort": 8000
     }
-  ]
+  ],
   "Environment": [
     {
       "Name": "DEEPSEEK_API_URL",
