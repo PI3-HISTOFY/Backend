@@ -71,5 +71,5 @@ jobs:
       - name: Update EB environment
         run: |
           aws elasticbeanstalk update-environment \
-            --environment-name Histofy-backend-env \
+            --environment-name Histofy-backend-env-1 \
             --version-label ${{ github.sha }}
