@@ -13,6 +13,17 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t camilocratos/histofy-backend:latest .
+          docker push camilocratos/histofy-backend:latest
+
       - name: Create Dockerrun.aws.json
         run: |
           cat > Dockerrun.aws.json <<'EOF'
