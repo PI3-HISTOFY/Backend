@@ -36,7 +36,7 @@ jobs:
             },
             "Ports": [
               {
-                "ContainerPort": "8000"
+                "ContainerPort": 8000
               }
             ]
           }
@@ -64,12 +64,12 @@ jobs:
       - name: Create new EB application version
         run: |
           aws elasticbeanstalk create-application-version \
-            --application-name histofy-backend \
+            --application-name Back-Histofy \
             --version-label ${{ github.sha }} \
             --source-bundle S3Bucket=$S3_BUCKET,S3Key=$S3_KEY
 
       - name: Update EB environment
         run: |
           aws elasticbeanstalk update-environment \
-            --environment-name Histofy-backend-env-1 \
+            --environment-name Back-Histofy-env \
             --version-label ${{ github.sha }}
