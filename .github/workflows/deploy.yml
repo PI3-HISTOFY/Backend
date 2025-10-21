@@ -21,6 +21,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          cd pi3-histofy-backend
           docker build -t camilocratos/histofy-backend:latest .
           docker push camilocratos/histofy-backend:latest
 
