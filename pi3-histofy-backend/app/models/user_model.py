@@ -30,6 +30,9 @@ class User(Base):
     estado = Column(Enum(EstadoEnum), nullable=False, server_default="activo")
     fechaRegistro = Column(TIMESTAMP, server_default=func.now())
 
+    logs = relationship("Auditoria", back_populates="usuario")
+
+
 class Sesion(Base):
     __tablename__ = "sesiones"
 
@@ -50,3 +53,5 @@ class Auditoria(Base):
     accion = Column(String(50), nullable=False)
     recurso = Column(String(500))
     fechaHora = Column(DateTime, default=datetime.utcnow)
+
+    usuario = relationship("User", back_populates="logs")

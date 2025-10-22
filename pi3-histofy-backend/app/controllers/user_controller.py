@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.user_model import User
+from app.models.user_model import Auditoria, User
 from app.schemas.user_schemas import UserCreate, UserUpdate
 from app.services import security, auditoria
 
@@ -118,3 +118,25 @@ def get_cantidad_medicos(db: Session, current_user: User):
     cantidad = db.query(User).filter(User.rol == "medico").count()
 
     return cantidad
+
+def get_all_logs(db: Session):
+    """Devuelve todos los logs del sistema"""
+    return db.query(Auditoria).order_by(Auditoria.fechaHora.desc()).all()
+
+def get_user_access_logs(db: Session, user_id: int):
+    """Devuelve los logs de un usuario específico"""
+    return (
+        db.query(Auditoria)
+        .filter(Auditoria.idUsuario == user_id)
+        .order_by(Auditoria.fechaHora.desc())
+        .all()
+    )
+
+def get_all_login_logs(db: Session):
+    """Devuelve todos los logs relacionados con inicio de sesión"""
+    return (
+        db.query(Auditoria)
+        .filter(Auditoria.recurso == "login")
+        .order_by(Auditoria.fechaHora.desc())
+        .all()
+    )

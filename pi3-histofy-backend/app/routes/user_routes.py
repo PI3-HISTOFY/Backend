@@ -68,6 +68,30 @@ def get_cantidad_medicos_route(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
 
+@router.get("/accesos")
+def get_all_login_logs(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Obtener todos los logs de inicio de sesión (solo admin)"""
+    if current_user.rol != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo el administrador puede consultar los logs")
+
+    return user_controller.get_all_login_logs(db)
+
+
+@router.get("/allLogs")
+def get_all_logs_route(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.roles_idRol != 1:
+        raise HTTPException(status_code=403, detail="No autorizado para ver todos los logs")
+    
+    return user_controller.get_all_logs(db)
+
+
+
 @router.get("/{user_id}", response_model=UserResponse)
 def get_user_by_id_route(
     user_id: int,
@@ -95,3 +119,13 @@ def disable_user_route(
     except LookupError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
+@router.get("/logs/{user_id}")
+def get_all_login_logs(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.rol != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo el administrador puede consultar los logs")
+
+    return user_controller.get_user_access_logs(db, user_id)
