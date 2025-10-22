@@ -97,3 +97,24 @@ def disable_user(db: Session, current_user: User, user_id: int):
 
     auditoria.registrar_auditoria(db, current_user.idUsuario, "INHABILITAR_USUARIO", f"Se inhabilitó usuario {usuario.email}")
     return usuario
+
+def get_current_user(db: Session, current_user: User):
+    """Obtener nombre del doctor"""
+    usuario = db.query(User).filter(User.idUsuario == current_user.idUsuario).first()
+    
+    if not usuario:
+        raise LookupError("Usuario no encontrado")
+    
+    return {
+        "nombre": usuario.nombre,
+        "apellido": usuario.apellido,
+    }
+
+def get_cantidad_medicos(db: Session, current_user: User):
+    """Cantidad total de medicos"""
+    if current_user.rol != "admin":
+        raise PermissionError("Solo el administrador puede consultar esta información")
+
+    cantidad = db.query(User).filter(User.rol == "medico").count()
+
+    return cantidad

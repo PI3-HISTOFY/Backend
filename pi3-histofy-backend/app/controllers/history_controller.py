@@ -73,6 +73,15 @@ def get_all_histories(db: Session, current_user: User):
 
     return historias
 
+def get_cant_histories(db: Session, current_user: User):
+    """Obtiene todas las historias (solo admin)"""
+    if current_user.rol != "admin":
+        raise PermissionError("Solo el administrador puede ver todas las historias")
+
+    historias = list(historias_collection.find()).count
+
+    return historias
+
 
 def get_histories_by_patient(db: Session, current_user: User, cc: str):
     """Obtiene todas las historias clínicas de un paciente por CC"""
@@ -88,10 +97,26 @@ def get_histories_by_patient(db: Session, current_user: User, cc: str):
 
     return historias
 
+def get_histories_by_patient_Name(db: Session, current_user: User, nombre: str):
+    """Obtiene todas las historias clínicas de un paciente por nombre"""
+    historias = list(historias_collection.find({"paciente.nombre": nombre}))
+    historias += list(historias_collection.find({"paciente.apellido": nombre}))
+    for h in historias:
+        h["_id"] = str(h["_id"])
+
+    registrar_auditoria(
+        db, current_user.idUsuario,
+        "CONSULTAR_HISTORIAS_PACIENTE",
+        f"Consultó historias del paciente por {nombre}"
+    )
+
+    return historias
+
 def _solo_digitos(cc: str | None) -> str | None:
     if not cc:
         return None
     return "".join(ch for ch in cc if ch.isdigit())
+
 
 def create_history_v2(
     db: Session,

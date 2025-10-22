@@ -43,11 +43,17 @@ def get_my_histories(
             detail="Debe iniciar sesión para acceder a este recurso"
         )
 
-    historias = list(historias_collection.find({"idUsuario": current_user.idUsuario}))
-    for h in historias:
-        h["_id"] = str(h["_id"])
+    return history_controller.get_my_histories(db, current_user)
 
-    return historias
+@router.get("/counthistory")
+def get_cantidad_historias_route(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        return history_controller.get_cant_histories(db, current_user)
+    except PermissionError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
 
 # todas las historias (solo admin)??
@@ -62,11 +68,8 @@ def get_all_histories(
             detail="Debe iniciar sesión para acceder a este recurso"
         )
 
-    historias = list(historias_collection.find())
-    for h in historias:
-        h["_id"] = str(h["_id"])
+    return history_controller.get_all_histories(db, current_user)
 
-    return historias
 
 
 # historias de un paciente por CC
@@ -82,8 +85,23 @@ def get_histories_by_patient(
             detail="Debe iniciar sesión para acceder a este recurso"
         )
 
-    historias = list(historias_collection.find({"paciente.cc": cc}))
-    for h in historias:
-        h["_id"] = str(h["_id"])
+    return history_controller.get_histories_by_patient(db, current_user, cc)
 
-    return historias
+
+# historias de un paciente por nombre
+@router.get("/patient/{name}")
+def get_histories_by_patient(
+    nombre: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if not current_user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Debe iniciar sesión para acceder a este recurso"
+        )
+
+    return history_controller.get_histories_by_patient_Name(db, current_user, nombre)
+
+
+
