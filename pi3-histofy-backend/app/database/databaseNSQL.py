@@ -1,6 +1,17 @@
 from pymongo import MongoClient
-import os
+from app.services.encryption_service import EncryptionService
 
+encryption_service = EncryptionService()
+
+def save_clinical_data(collection, data: dict):
+    data["clinical_data"] = encryption_service.encrypt(data["clinical_data"])
+    collection.insert_one(data)
+
+def get_clinical_data(collection, query: dict):
+    result = collection.find_one(query)
+    if result and "clinical_data" in result:
+        result["clinical_data"] = encryption_service.decrypt(result["clinical_data"])
+    return result
 
 MONGO_USER = "Histofy"   
 MONGO_PASSWORD = "HistofyPass"

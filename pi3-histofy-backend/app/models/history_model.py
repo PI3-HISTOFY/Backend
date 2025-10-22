@@ -1,6 +1,32 @@
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
+from app.services.encryption_service import EncryptionService
+
+encryption_service = EncryptionService()
+
+class HistoriaMongoBase(BaseModel):
+    paciente: dict
+    motivo_consulta: str
+    antecedentes: Optional[str] = None
+    diagnostico: Optional[str] = None
+    tratamiento: Optional[str] = None
+    notas: Optional[str] = None
+    nlp: Optional[dict] = None
+
+    def encrypt_sensitive_data(self):
+        """Encripta los campos sensibles antes de guardar"""
+        sensitive_fields = ['motivo_consulta', 'antecedentes', 'diagnostico', 'tratamiento', 'notas']
+        for field in sensitive_fields:
+            if hasattr(self, field) and getattr(self, field):
+                setattr(self, field, encryption_service.encrypt(getattr(self, field)))
+
+    def decrypt_sensitive_data(self):
+        """Desencripta los campos sensibles después de recuperar"""
+        sensitive_fields = ['motivo_consulta', 'antecedentes', 'diagnostico', 'tratamiento', 'notas']
+        for field in sensitive_fields:
+            if hasattr(self, field) and getattr(self, field):
+                setattr(self, field, encryption_service.decrypt(getattr(self, field)))
 
 #historias clinicas
 class Paciente(BaseModel):
@@ -15,15 +41,6 @@ class NLPData(BaseModel):
     keywords: List[str] = []
     sentimiento: Optional[str] = None
     riesgo: Optional[str] = None
-
-class HistoriaMongoBase(BaseModel):
-    paciente: Paciente
-    motivo_consulta: str
-    antecedentes: Optional[str] = None
-    diagnostico: Optional[str] = None
-    tratamiento: Optional[str] = None
-    notas: Optional[str] = None
-    nlp: Optional[NLPData] = None
 
 class HistoriaMongoCreate(HistoriaMongoBase):
     pass
