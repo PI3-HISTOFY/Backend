@@ -78,7 +78,7 @@ def get_cant_histories(db: Session, current_user: User):
     if current_user.rol != "admin":
         raise PermissionError("Solo el administrador puede ver todas las historias")
 
-    historias = list(historias_collection.find()).count
+    historias = historias_collection.count_documents({})
 
     return historias
 

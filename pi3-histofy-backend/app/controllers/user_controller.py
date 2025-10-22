@@ -105,10 +105,7 @@ def get_current_user(db: Session, current_user: User):
     if not usuario:
         raise LookupError("Usuario no encontrado")
     
-    return {
-        "nombre": usuario.nombre,
-        "apellido": usuario.apellido,
-    }
+    return usuario
 
 def get_cantidad_medicos(db: Session, current_user: User):
     """Cantidad total de medicos"""
@@ -136,7 +133,7 @@ def get_all_login_logs(db: Session):
     """Devuelve todos los logs relacionados con inicio de sesión"""
     return (
         db.query(Auditoria)
-        .filter(Auditoria.recurso == "login")
+        .filter(Auditoria.accion == "login")
         .order_by(Auditoria.fechaHora.desc())
         .all()
     )
