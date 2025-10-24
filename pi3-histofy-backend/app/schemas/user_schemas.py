@@ -6,18 +6,16 @@ from enum import Enum
 class RolEnum(str, Enum):
     admin = "admin"
     medico = "medico"
-    paciente = "paciente"
 
 class EstadoEnum(str, Enum):
     activo = "activo"
     inactivo = "inactivo"
-    suspendido = "suspendido"
 
 class UserCreate(BaseModel):
+    cedula: int
     nombre: str
     apellido: str
     email: EmailStr
-    password: str
     rol: Optional[RolEnum] = RolEnum.medico
     estado: Optional[EstadoEnum] = EstadoEnum.activo
 
@@ -31,6 +29,7 @@ class UserUpdate(BaseModel):
 
 class UserResponse(BaseModel):
     idUsuario: int
+    cedula: int
     nombre: str
     apellido: str
     email: EmailStr
@@ -41,6 +40,9 @@ class UserResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class UserResponseCreate(BaseModel):
+    usuario: UserResponse
+    password_temporal: str
 
 class UserLogin(BaseModel):
     nombre: str

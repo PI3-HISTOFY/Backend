@@ -1,15 +1,15 @@
 {
-  "AWSEBDockerrunVersion": 3,
+  "AWSEBDockerrunVersion": 2,
   "containerDefinitions": [
     {
-      "name": "backend",
+      "name": "histofy",
       "image": "camilocratos/histofy-backend:latest",
       "essential": true,
       "memory": 512,
       "portMappings": [
         {
           "containerPort": 8000,
-          "hostPort": 8000
+          "hostPort": 80
         }
       ],
       "environment": [

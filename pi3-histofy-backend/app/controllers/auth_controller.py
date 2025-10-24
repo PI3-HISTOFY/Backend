@@ -53,3 +53,34 @@ def logout(db: Session, current_user: User):
     db.query(Sesion).filter(Sesion.idUsuario == current_user.idUsuario).delete()
     db.commit()
     return {"msg": "Sesiones eliminadas, logout exitoso"}
+
+
+def refresh_token(db: Session, current_user: User):
+    sesion = db.query(Sesion).filter(Sesion.idUsuario == current_user.idUsuario).first()
+
+    if not sesion:
+        raise HTTPException(status_code=401, detail="Sesión no encontrada o expirada")
+
+    if sesion.expiracion < datetime.utcnow():
+        db.delete(sesion)
+        db.commit()
+        raise HTTPException(status_code=401, detail="Sesión expirada, vuelva a iniciar sesión")
+
+    # Si quedan menos de 10 minutos, renovar el token
+    tiempo_restante = (sesion.expiracion - datetime.utcnow()).total_seconds() / 60
+    if tiempo_restante <= 10:
+        nuevo_token = security.create_access_token({"sub": current_user.email})
+        nueva_expiracion = datetime.utcnow() + timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+        sesion.token = nuevo_token
+        sesion.expiracion = nueva_expiracion
+        db.commit()
+
+        return {
+            "access_token": nuevo_token,
+            "token_type": "bearer",
+            "expires_in": security.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            "message": "Token renovado automáticamente"
+        }
+
+    return {"message": "Token aún válido, no requiere renovación"}

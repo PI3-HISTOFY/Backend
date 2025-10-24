@@ -1,7 +1,16 @@
+from email.mime.text import MIMEText
+import random
+import smtplib
+import string
 from sqlalchemy.orm import Session
 from app.models.user_model import Auditoria, User
 from app.schemas.user_schemas import UserCreate, UserUpdate
 from app.services import security, auditoria
+
+
+def generar_contrasena(longitud: int = 8) -> str:
+    caracteres = string.ascii_letters + string.digits
+    return ''.join(random.choice(caracteres) for _ in range(longitud))
 
 def create_user(db: Session, current_user: User, user: UserCreate):
     if current_user.rol != "admin":
@@ -10,9 +19,15 @@ def create_user(db: Session, current_user: User, user: UserCreate):
     existente = db.query(User).filter(User.email == user.email).first()
     if existente:
         raise ValueError("El email ya está registrado")
+    existentew = db.query(User).filter(User.cedula == user.cedula).first()
+    if existentew:
+        raise ValueError("La cedula ya está registrada")
     
-    hashed_password = security.hash_password(user.password)
+    pass_dado = generar_contrasena()
+    print(pass_dado)
+    hashed_password = security.hash_password(pass_dado)
     nuevo_usuario = User(
+        cedula=user.cedula,
         nombre=user.nombre,
         apellido=user.apellido,
         email=user.email,
@@ -24,8 +39,12 @@ def create_user(db: Session, current_user: User, user: UserCreate):
     db.commit()
     db.refresh(nuevo_usuario)
     
+
     auditoria.registrar_auditoria(db, current_user.idUsuario, "CREAR_USUARIO", f"Se creó usuario {nuevo_usuario.email}")
-    return nuevo_usuario
+    return {
+        "usuario": nuevo_usuario,
+        "password_temporal": pass_dado
+    }
 
 
 
@@ -83,20 +102,25 @@ def get_user_by_id(db: Session, current_user: User, user_id: int):
 
 
 def disable_user(db: Session, current_user: User, user_id: int):
-    """Inhabilitar un usuario (solo admin)"""
+    
     if current_user.rol != "admin":
-        raise PermissionError("Solo el administrador puede inhabilitar usuarios")
+        raise PermissionError("Solo el administrador puede cambiar el estado de usuarios")
 
     usuario = db.query(User).filter(User.idUsuario == user_id).first()
     if not usuario:
         raise LookupError("Usuario no encontrado")
 
-    usuario.estado = "inactivo"
+    nuevo_estado = "activo" if usuario.estado == "inactivo" else "inactivo"
+    usuario.estado = nuevo_estado
+
     db.commit()
     db.refresh(usuario)
 
-    auditoria.registrar_auditoria(db, current_user.idUsuario, "INHABILITAR_USUARIO", f"Se inhabilitó usuario {usuario.email}")
+    accion = "HABILITAR_USUARIO" if nuevo_estado == "activo" else "INHABILITAR_USUARIO"
+    auditoria.registrar_auditoria(db, current_user.idUsuario, accion, f"Se cambió estado de usuario {usuario.email} a {nuevo_estado}")
+
     return usuario
+
 
 def get_current_user(db: Session, current_user: User):
     """Obtener nombre del doctor"""
@@ -113,6 +137,15 @@ def get_cantidad_medicos(db: Session, current_user: User):
         raise PermissionError("Solo el administrador puede consultar esta información")
 
     cantidad = db.query(User).filter(User.rol == "medico").count()
+
+    return cantidad
+
+def get_cantidad_medicosactivos(db: Session, current_user: User):
+    """Cantidad total de medicos activos"""
+    if current_user.rol != "admin":
+        raise PermissionError("Solo el administrador puede consultar esta información")
+
+    cantidad = db.query(User).filter(User.rol == "medico" and User.estado == "activo").count()
 
     return cantidad
 

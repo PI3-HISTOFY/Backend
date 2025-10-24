@@ -4,41 +4,89 @@ import app.services.security as security
 from fastapi.security import OAuth2PasswordBearer 
 from sqlalchemy.orm import Session 
 from app import models, database
-from datetime import datetime
+from datetime import datetime, timedelta
 from jose import jwt, JWTError 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"]) 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login") 
 
 # aaaaaaaaaaaaaaaaaaaaaaaa verificar 
-def get_current_user( 
-        token: str = Depends(oauth2_scheme), 
-        db: Session = Depends(database.get_db) 
-    ): 
-    try: 
-        # Decodificar el JWT 
-        payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM]) 
-        email = payload.get("sub") 
-        if email is None: 
-            raise HTTPException(status_code=401, detail="Token inválido") 
-    except JWTError: 
-        raise HTTPException(status_code=401, detail="Token inválido o expirado") 
+# def get_current_user( 
+#         token: str = Depends(oauth2_scheme), 
+#         db: Session = Depends(database.get_db) 
+#     ): 
+#     try: 
+#         # Decodificar el JWT 
+#         payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM]) 
+#         email = payload.get("sub") 
+#         if email is None: 
+#             raise HTTPException(status_code=401, detail="Token inválido") 
+#     except JWTError: 
+#         raise HTTPException(status_code=401, detail="Token inválido o expirado") 
     
-    # Validar sesión en DB 
-    sesion = db.query(models.Sesion).filter(models.Sesion.token == token).first() 
-    if not sesion: 
-        raise HTTPException(status_code=401, detail="Sesión no encontrada o cerrada") 
+#     # Validar sesión en DB 
+#     sesion = db.query(models.Sesion).filter(models.Sesion.token == token).first() 
+#     if not sesion: 
+#         raise HTTPException(status_code=401, detail="Sesión no encontrada o cerrada") 
     
-    # Verificar expiración 
-    if sesion.expiracion < datetime.utcnow(): 
-        db.delete(sesion) 
-        db.commit() 
-        raise HTTPException(status_code=401, detail="Sesión expirada") 
+#     # Verificar expiración 
+#     if sesion.expiracion < datetime.utcnow(): 
+#         db.delete(sesion) 
+#         db.commit() 
+#         raise HTTPException(status_code=401, detail="Sesión expirada") 
     
-    # Obtener usuario 
-    usuario = db.query(models.User).filter(models.User.email == email).first() 
-    if not usuario: 
-        raise HTTPException(status_code=404, detail="Usuario no encontrado") 
-    return usuario 
+#     # Obtener usuario 
+#     usuario = db.query(models.User).filter(models.User.email == email).first() 
+#     if not usuario: 
+#         raise HTTPException(status_code=404, detail="Usuario no encontrado") 
+#     return usuario 
         
 
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(database.get_db)
+):
+    try:
+        #Decodificar el JWT
+        payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM])
+        email = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Token inválido")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Token inválido o expirado")
+
+    #Validar sesión en la base de datos
+    sesion = db.query(models.Sesion).filter(models.Sesion.token == token).first()
+    if not sesion:
+        raise HTTPException(status_code=401, detail="Sesión no encontrada o cerrada")
+
+    # Verificar expiración del token
+    if sesion.expiracion < datetime.utcnow():
+        db.delete(sesion)
+        db.commit()
+        raise HTTPException(status_code=401, detail="Sesión expirada")
+
+    # Renovar automáticamente si faltan menos de 10 minutos
+    tiempo_restante = (sesion.expiracion - datetime.utcnow()).total_seconds() / 60
+    if tiempo_restante <= 10:
+        nuevo_token = security.create_access_token({"sub": email})
+        nueva_expiracion = datetime.utcnow() + timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+        sesion.token = nuevo_token
+        sesion.expiracion = nueva_expiracion
+        db.commit()
+
+        # Puedes devolver el token renovado junto al usuario
+        usuario = db.query(models.User).filter(models.User.email == email).first()
+        if not usuario:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+        usuario.nuevo_token = nuevo_token  # atributo temporal, no en DB
+        return usuario
+
+    # Obtener usuario
+    usuario = db.query(models.User).filter(models.User.email == email).first()
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    return usuario
