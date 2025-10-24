@@ -29,27 +29,33 @@ jobs:
         run: |
           cat > Dockerrun.aws.json <<'EOF'
           {
-            "AWSEBDockerrunVersion": 1,
-            "Image": {
-              "Name": "camilocratos/histofy-backend:latest",
-              "Update": "true"
-            },
-            "Ports": [
+            "AWSEBDockerrunVersion": 4,
+            "containerDefinitions": [
               {
-                "ContainerPort": 8000
-              }
-            ],
-            "Environment": [
-              {
-                "Name": "DEEPSEEK_API_URL",
-                "Value": "https://api.deepseek.com"
-              },
-              {
-                "Name": "DEEPSEEK_API_KEY",
-                "Value": "sk-e11da7f1ada1424b9d14ee4a5ebd382c"
+                "name": "histofy",
+                "image": "camilocratos/histofy-backend:latest",
+                "essential": true,
+                "memory": 512,
+                "portMappings": [
+                  {
+                    "containerPort": 8000,
+                    "hostPort": 80
+                  }
+                ],
+                "environment": [
+                  {
+                    "Name": "DEEPSEEK_API_URL",
+                    "Value": "https://api.deepseek.com"
+                  },
+                  {
+                    "Name": "DEEPSEEK_API_KEY",
+                    "Value": "sk-e11da7f1ada1424b9d14ee4a5ebd382c"
+                  }
+                ]
               }
             ]
           }
+
           EOF
 
       - name: Zip Docker bundle

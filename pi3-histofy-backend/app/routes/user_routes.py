@@ -53,6 +53,18 @@ def get_cantidad_medicos_route(
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
+@router.get("/countactivos")
+def get_cantidad_medicos_route(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    try:
+        return user_controller.get_cantidad_medicosactivos(db, current_user)
+    except PermissionError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
+
 
 @router.get("/accesos")
 def get_all_login_logs(

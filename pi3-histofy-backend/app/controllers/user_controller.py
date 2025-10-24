@@ -140,6 +140,15 @@ def get_cantidad_medicos(db: Session, current_user: User):
 
     return cantidad
 
+def get_cantidad_medicosactivos(db: Session, current_user: User):
+    """Cantidad total de medicos activos"""
+    if current_user.rol != "admin":
+        raise PermissionError("Solo el administrador puede consultar esta información")
+
+    cantidad = db.query(User).filter(User.rol == "medico" and User.estado == "activo").count()
+
+    return cantidad
+
 def get_all_logs(db: Session):
     """Devuelve todos los logs del sistema"""
     return db.query(Auditoria).order_by(Auditoria.fechaHora.desc()).all()
