@@ -20,6 +20,7 @@ class User(Base):
     __tablename__ = "usuarios"
 
     idUsuario = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    cedula = Column(Integer, unique=True, nullable=False)
     nombre = Column(String(100))
     apellido = Column(String(100), nullable=False)
     email = Column(String(255), unique=True, index=True)

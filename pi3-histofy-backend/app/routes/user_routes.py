@@ -2,14 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from app.database.database import get_db
-from app.schemas.user_schemas import UserCreate, UserResponse
+from app.schemas.user_schemas import UserCreate, UserResponse, UserResponseCreate
 from app.controllers import user_controller
 from app.services.auth import get_current_user
 from app.models.user_model import User
 
 router = APIRouter(prefix="/user", tags=["Users"])
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register", response_model=UserResponseCreate)
 def register(user: UserCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
         return user_controller.create_user(db, current_user, user)
@@ -114,7 +114,7 @@ def get_user_by_id_route(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.put("/disable/{user_id}", response_model=UserResponse)
+@router.put("/state/{user_id}", response_model=UserResponse)
 def disable_user_route(
     user_id: int,
     db: Session = Depends(get_db),
@@ -126,6 +126,7 @@ def disable_user_route(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
     except LookupError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
 
 @router.get("/logs/{user_id}")
 def get_all_login_logs(
