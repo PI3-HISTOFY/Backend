@@ -54,7 +54,7 @@ def get_cantidad_medicos_route(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
 
 @router.get("/countactivos")
-def get_cantidad_medicos_route(
+def get_cantidad_medicosactivos_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
