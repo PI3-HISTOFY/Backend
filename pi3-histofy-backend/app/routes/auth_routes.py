@@ -36,3 +36,4 @@ def logout_route(
     current_user: User = Depends(get_current_user)
 ):
     return auth_controller.logout(db, current_user)
+

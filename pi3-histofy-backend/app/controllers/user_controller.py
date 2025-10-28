@@ -33,7 +33,8 @@ def create_user(db: Session, current_user: User, user: UserCreate):
         email=user.email,
         contrasenaHash=hashed_password,
         rol=user.rol,
-        estado=user.estado
+        estado=user.estado,
+        password_temporal=True
     )
     db.add(nuevo_usuario)
     db.commit()
@@ -145,7 +146,10 @@ def get_cantidad_medicosactivos(db: Session, current_user: User):
     if current_user.rol != "admin":
         raise PermissionError("Solo el administrador puede consultar esta información")
 
-    cantidad = db.query(User).filter(User.rol == "medico" and User.estado == "activo").count()
+    cantidad = db.query(User).filter(
+        User.rol == "medico",
+        User.estado == "activo"
+    ).count()
 
     return cantidad
 

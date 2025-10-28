@@ -30,6 +30,7 @@ class User(Base):
     rol = Column(Enum(RolEnum), nullable=False, server_default="medico")
     estado = Column(Enum(EstadoEnum), nullable=False, server_default="activo")
     fechaRegistro = Column(TIMESTAMP, server_default=func.now())
+    password_temporal = Column(Boolean, default=True)
 
     logs = relationship("Auditoria", back_populates="usuario")
 

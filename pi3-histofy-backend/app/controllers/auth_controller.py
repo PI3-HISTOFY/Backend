@@ -22,6 +22,10 @@ def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = 
         )
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
+    
+    if usuario.password_temporal:
+        raise HTTPException(status_code=401, detail="Debe cambiar su contraseña temporal antes de continuar")
+
 
     access_token = security.create_access_token({"sub": usuario.email})
     expiracion = datetime.utcnow() + timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
@@ -84,3 +88,11 @@ def refresh_token(db: Session, current_user: User):
         }
 
     return {"message": "Token aún válido, no requiere renovación"}
+
+def cambiar_contrasena(db: Session, user: User, nueva_contrasena: str):
+    hashed_new = security.hash_password(nueva_contrasena)
+    user.contrasenaHash = hashed_new
+    user.password_temporal = False 
+    db.commit()
+    db.refresh(user)
+    return {"mensaje": "Contraseña actualizada correctamente"}
