@@ -1,5 +1,7 @@
 import os
 from cryptography.fernet import Fernet
+from dotenv import load_dotenv
+load_dotenv()
 
 class EncryptionService:
     def __init__(self):

@@ -93,8 +93,46 @@ class HistoriaMongoCreateV2(BaseModel):
             return v
         except Exception:
             raise ValueError("fecha debe estar en ISO 8601 (ej. 2025-06-24T00:00:00-05:00)")
+        
+    def encrypt_sensitive_data(self):
+        """Encripta los campos sensibles antes de guardar"""
+        sensitive_fields = [
+            'motivo_consulta',
+            'antecedentes',
+            'examen',
+            'diagnostico',
+            'tratamiento'
+        ]
+        for field in sensitive_fields:
+            value = getattr(self, field, None)
+            if value:
+                # Si examen es dict, lo convertimos a string antes de encriptar
+                if isinstance(value, dict):
+                    value = str(value)
+                setattr(self, field, encryption_service.encrypt(value))
+
+    def decrypt_sensitive_data(self):
+        """Desencripta los campos sensibles después de recuperar"""
+        sensitive_fields = [
+            'motivo_consulta',
+            'antecedentes',
+            'examen',
+            'diagnostico',
+            'tratamiento'
+        ]
+        for field in sensitive_fields:
+            value = getattr(self, field, None)
+            if value:
+                try:
+                    decrypted = encryption_service.decrypt(value)
+                    setattr(self, field, decrypted)
+                except Exception:
+                    # Ignorar si ya está desencriptado o el formato no coincide
+                    pass
 
 class HistoriaMongoResponseV2(HistoriaMongoCreateV2):
     _id: Optional[str] = None
     idUsuario: Optional[int] = None
 
+
+##cambiar

@@ -1,7 +1,14 @@
+import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
+# Carga las variables antes de que nada más se importe
+env_path = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(dotenv_path=env_path)
+
+
+#load_dotenv(dotenv_path=Path(__file__).resolve().parents[1] / ".env")
+print("ENCRYPTION_KEY =", os.getenv("ENCRYPTION_KEY"))
 
 from fastapi import FastAPI
 from app.routes import router as api_router
