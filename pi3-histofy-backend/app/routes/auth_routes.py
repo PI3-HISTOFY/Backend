@@ -19,6 +19,15 @@ def login_route(
 ):
     return auth_controller.login(db, form_data, request)
 
+@router.post("/changepass")
+def login_route(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
+    request: Request = None
+):
+    return auth_controller.cambiar_contrasena(db, form_data, request)
+
+
 
 @router.get("/protected")
 def protected_route(current_user: User = Depends(get_current_user)):
