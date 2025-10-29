@@ -3,7 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from app.services.auth import get_current_user
 from app.database.database import get_db
-from app.models.user_model import User
+from app.models.user_model import User, UserUpdatePassword
 from app.controllers import auth_controller
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
@@ -21,11 +21,11 @@ def login_route(
 
 @router.post("/changepass")
 def login_route(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    nueva_contrasena: UserUpdatePassword,
     db: Session = Depends(get_db),
-    request: Request = None
+    current_user: User = Depends(get_current_user)
 ):
-    return auth_controller.cambiar_contrasena(db, form_data, request)
+    return auth_controller.cambiar_contrasena(db, current_user, nueva_contrasena.nueva_contrasena)
 
 
 

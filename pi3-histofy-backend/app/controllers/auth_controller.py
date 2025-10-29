@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from jose import jwt, JWTError
 from app.services import security, auditoria
 from sqlalchemy.orm import Session
-
+from app.controllers import user_controller
 from app.models.user_model import User, Sesion
 from app.services import security
 
@@ -128,10 +128,11 @@ def refresh_token(db: Session, current_user: User):
 
     return {"message": "Token aún válido, no requiere renovación"}
 
-def cambiar_contrasena(db: Session, user: User, nueva_contrasena: str):
+def cambiar_contrasena(db: Session, current_user: User, nueva_contrasena: str):
     hashed_new = security.hash_password(nueva_contrasena)
-    user.contrasenaHash = hashed_new
-    user.password_temporal = False 
+    #user_controller.update_user(db, current_user, user, user)
+    current_user.contrasenaHash = hashed_new
+    current_user.password_temporal = False 
     db.commit()
-    db.refresh(user)
+    db.refresh(current_user)
     return {"mensaje": "Contraseña actualizada correctamente"}

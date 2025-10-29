@@ -16,6 +16,9 @@ class EstadoEnum(str, enum.Enum):
     inactivo = "inactivo"
     suspendido = "suspendido"
 
+class UserUpdatePassword(Base):
+    nueva_contrasena: str
+
 class User(Base):
     __tablename__ = "usuarios"
 
