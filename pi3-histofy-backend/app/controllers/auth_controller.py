@@ -9,11 +9,9 @@ from app.models.user_model import User, Sesion
 from app.services import security
 
 def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = None):
-    """Inicia sesión y genera token JWT"""
     ip_cliente = request.client.host if request else "desconocido"
-    email = form_data.username
-
-    usuario = db.query(User).filter(User.email == email).first()
+#     email = form_data.username
+    usuario = db.query(User).filter(User.email == form_data.username).first()
 
     if not usuario or not security.verify_password(form_data.password, usuario.contrasenaHash):
         auditoria.registrar_auditoria(
@@ -22,14 +20,11 @@ def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = 
         )
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    
-    if usuario.password_temporal:
-        raise HTTPException(status_code=401, detail="Debe cambiar su contraseña temporal antes de continuar")
 
+    access_token = security.create_access_token({"sub": usuario.email, "password_temporal": usuario.password_temporal})
 
-    access_token = security.create_access_token({"sub": usuario.email})
     expiracion = datetime.utcnow() + timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
-
+    
     nueva_sesion = Sesion(
         idUsuario=usuario.idUsuario,
         token=access_token,
@@ -39,7 +34,6 @@ def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = 
     db.add(nueva_sesion)
     db.commit()
 
-
     auditoria.registrar_auditoria(
         db, usuario.idUsuario,
         "login", f"Inicio de sesión exitoso desde {ip_cliente}"
@@ -48,8 +42,53 @@ def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = 
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "expires_in": security.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+        "expires_in": security.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        "password_temporal": usuario.password_temporal,
+        "usuario": { "idUsuario": usuario.idUsuario}
     }
+
+# def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = None):
+#     """Inicia sesión y genera token JWT"""
+#     ip_cliente = request.client.host if request else "desconocido"
+#     email = form_data.username
+
+#     usuario = db.query(User).filter(User.email == email).first()
+
+#     if not usuario or not security.verify_password(form_data.password, usuario.contrasenaHash):
+#         auditoria.registrar_auditoria(
+#             db, usuario.idUsuario if usuario else None,
+#             "login", f"Intento fallido desde {ip_cliente}"
+#         )
+#         raise HTTPException(status_code=401, detail="Credenciales inválidas")
+
+    
+#     if usuario.password_temporal:
+#         raise HTTPException(status_code=401, detail="Debe cambiar su contraseña temporal antes de continuar")
+
+
+#     access_token = security.create_access_token({"sub": usuario.email})
+#     expiracion = datetime.utcnow() + timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
+
+#     nueva_sesion = Sesion(
+#         idUsuario=usuario.idUsuario,
+#         token=access_token,
+#         expiracion=expiracion,
+#         ip=ip_cliente
+#     )
+#     db.add(nueva_sesion)
+#     db.commit()
+
+
+#     auditoria.registrar_auditoria(
+#         db, usuario.idUsuario,
+#         "login", f"Inicio de sesión exitoso desde {ip_cliente}"
+#     )
+
+#     return {
+#         "access_token": access_token,
+#         "token_type": "bearer",
+#         "expires_in": security.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+#     }
 
 
 def logout(db: Session, current_user: User):
