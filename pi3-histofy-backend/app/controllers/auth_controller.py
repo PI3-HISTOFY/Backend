@@ -6,7 +6,6 @@ from app.services import security, auditoria
 from sqlalchemy.orm import Session
 from app.controllers import user_controller
 from app.models.user_model import User, Sesion
-from app.services import security
 
 def login(db: Session, form_data: OAuth2PasswordRequestForm, request: Request = None):
     ip_cliente = request.client.host if request else "desconocido"
@@ -128,11 +127,31 @@ def refresh_token(db: Session, current_user: User):
 
     return {"message": "Token aún válido, no requiere renovación"}
 
-def cambiar_contrasena(db: Session, current_user: User, nueva_contrasena: str):
-    hashed_new = security.hash_password(nueva_contrasena)
-    #user_controller.update_user(db, current_user, user, user)
-    current_user.contrasenaHash = hashed_new
-    current_user.password_temporal = False 
+def change_password(db: Session, current_user: User, user_id: int, nueva_contrasena: str):
+    """Permite cambiar la contraseña de un usuario, marcando que ya no es temporal"""
+    # Solo el propio usuario o un admin puede cambiar la contraseña
+    if current_user.idUsuario != user_id and current_user.rol != "admin":
+        raise PermissionError("No tiene permisos para cambiar esta contraseña")
+
+    usuario = db.query(User).filter(User.idUsuario == user_id).first()
+    if not usuario:
+        raise LookupError("Usuario no encontrado")
+
+    if not nueva_contrasena or len(nueva_contrasena.strip()) < 6:
+        raise ValueError("La nueva contraseña debe tener al menos 6 caracteres")
+
+    usuario.contrasenaHash = security.hash_password(nueva_contrasena)
+
+    usuario.password_temporal = False
+
     db.commit()
-    db.refresh(current_user)
-    return {"mensaje": "Contraseña actualizada correctamente"}
+    db.refresh(usuario)
+
+    auditoria.registrar_auditoria(
+        db,
+        current_user.idUsuario,
+        "CAMBIO_CONTRASEÑA",
+        f"Se cambió la contraseña del usuario {usuario.email}"
+    )
+
+    return {"mensaje": f"Contraseña actualizada correctamente para {usuario.email}"}

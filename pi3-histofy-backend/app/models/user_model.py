@@ -1,3 +1,4 @@
+from openai import BaseModel
 from sqlalchemy import Column, Integer, String, Boolean, Enum, TIMESTAMP,ForeignKey,DateTime
 from sqlalchemy.sql import func
 import enum
@@ -16,8 +17,6 @@ class EstadoEnum(str, enum.Enum):
     inactivo = "inactivo"
     suspendido = "suspendido"
 
-class UserUpdatePassword(Base):
-    nueva_contrasena: str
 
 class User(Base):
     __tablename__ = "usuarios"
@@ -60,3 +59,7 @@ class Auditoria(Base):
     fechaHora = Column(DateTime, default=datetime.utcnow)
 
     usuario = relationship("User", back_populates="logs")
+
+    
+class UserUpdatePassword(BaseModel):
+    nueva_contrasena: str
