@@ -25,7 +25,7 @@ def login_route(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    return auth_controller.cambiar_contrasena(db, current_user, nueva_contrasena.nueva_contrasena)
+    return auth_controller.change_password(db, current_user, current_user.idUsuario, nueva_contrasena.nueva_contrasena)
 
 
 

@@ -50,9 +50,7 @@ def create_user(db: Session, current_user: User, user: UserCreate):
 
 
 def update_user(db: Session, current_user: User, user_id: int, user: UserUpdate):
-    """Actualizar datos de un usuario"""
-    if current_user.rol != "admin":
-        raise PermissionError("Solo el administrador puede editar usuarios")
+    
 
     usuario = db.query(User).filter(User.idUsuario == user_id).first()
     if not usuario:
